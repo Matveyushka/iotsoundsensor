@@ -7,7 +7,7 @@
 #define BTN D6
 #define SND A0
 
-#define THRESHOLD_VALUE 200
+#define THRESHOLD_VALUE 100
 #define OUTPUT_SPEED_IN_BODS 115200
 
 #define SENDED_STEPS_AMOUNT 60
@@ -20,10 +20,10 @@
 
 #define SOUND_LOOP_STEP 10
 
-#define BACKEND_ADRESS "http://192.168.43.116:1234/history"
+#define BACKEND_ADRESS "http://rocky-sea-48152.herokuapp.com/history"
 
-#define _SSID "the_best_wifi"
-#define PASSWORD "zaslonka"
+#define _SSID "vk.com/ilfirin_tiuru"
+#define PASSWORD "sdcd0113"
 
 bool isOn = false;
 
@@ -53,14 +53,19 @@ void connectToWifi()
 void setup() {
   pinMode(LED, OUTPUT);
   pinMode(BTN, INPUT);
-  
+  pinMode(D4, OUTPUT);
+  digitalWrite(D4, HIGH);
+  digitalWrite(LED, HIGH);
+ 
   Serial.begin(OUTPUT_SPEED_IN_BODS);
   
   connectToWifi();
+  digitalWrite(LED, LOW);
 }
 
 void indicateSoundLevel(int lvl)
 {
+  digitalWrite(LED, lvl > THRESHOLD_VALUE ? HIGH : LOW);
 }
 
 void sendValues(int values[SENDED_STEPS_AMOUNT])
@@ -76,40 +81,18 @@ void sendValues(int values[SENDED_STEPS_AMOUNT])
   postData += String(values[SENDED_STEPS_AMOUNT - 1]) + "]";
   http.begin(BACKEND_ADRESS); 
   http.addHeader("Content-Type", "text-plain");
+  Serial.println(postData);
   int httpCode = http.POST(postData);   
-  /*
-  String payload = http.getString();    
+  
+  /*String payload = http.getString();    
   Serial.println(httpCode);  
-  Serial.println(payload);    
-  */
+  Serial.println(payload);*/
+  
   http.end(); 
 }
 
-void switchLedOn() { digitalWrite(LED, HIGH); }
-void switchLedOff() { digitalWrite(LED, LOW); }
-
-
-/*        Touch sensor loop        */
-int touchSensorLastRead = -TOUCH_SENSOR_LOOP_STEP_MS;
-int touchSensorState = 0;
-void activationTouchSensorLoop()
-{
-  if (millis() - touchSensorLastRead >= TOUCH_SENSOR_LOOP_STEP_MS)
-  {
-    touchSensorLastRead = millis();
-    touchSensorState = digitalRead(BTN) == 1 ? touchSensorState + 1 : 0;
-    if (touchSensorState == TOUCH_SENSOR_ACTIVATION_TIME_MS / TOUCH_SENSOR_LOOP_STEP_MS)
-    {
-      isOn = !isOn;
-      if (isOn) switchLedOn();
-      else 
-      {
-        switchLedOff();
-        resetRecorded();
-      }
-    }
-  }
-}
+void switchLedOn() { digitalWrite(D4, LOW); }
+void switchLedOff() { digitalWrite(D4, HIGH); }
 
 /*         Sound recording loop       */
 int values[SENDED_STEPS_AMOUNT];
@@ -173,6 +156,28 @@ void soundLoop()
     if (isOn)
     {
       record();
+    }
+  }
+}
+
+/*        Touch sensor loop        */
+int touchSensorLastRead = -TOUCH_SENSOR_LOOP_STEP_MS;
+int touchSensorState = 0;
+void activationTouchSensorLoop()
+{
+  if (millis() - touchSensorLastRead >= TOUCH_SENSOR_LOOP_STEP_MS)
+  {
+    touchSensorLastRead = millis();
+    touchSensorState = digitalRead(BTN) == 1 ? touchSensorState + 1 : 0;
+    if (touchSensorState == TOUCH_SENSOR_ACTIVATION_TIME_MS / TOUCH_SENSOR_LOOP_STEP_MS)
+    {
+      isOn = !isOn;
+      if (isOn) switchLedOn();
+      else 
+      {
+        switchLedOff();
+        resetRecorded();
+      }
     }
   }
 }
