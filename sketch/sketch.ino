@@ -7,7 +7,7 @@
 #define BTN D6
 #define SND A0
 
-#define THRESHOLD_VALUE 100
+#define THRESHOLD_VALUE 300
 #define OUTPUT_SPEED_IN_BODS 115200
 
 #define SENDED_STEPS_AMOUNT 60
@@ -20,7 +20,7 @@
 
 #define SOUND_LOOP_STEP 10
 
-#define BACKEND_ADRESS "http://rocky-sea-48152.herokuapp.com/history"
+#define BACKEND_ADRESS "http://gabno.herokuapp.com/history"
 
 #define _SSID "vk.com/ilfirin_tiuru"
 #define PASSWORD "sdcd0113"
